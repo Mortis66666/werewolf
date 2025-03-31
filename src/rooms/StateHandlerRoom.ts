@@ -3,7 +3,7 @@ import { TPlayerOptions } from '../entities/Player.js'
 import { State, IState } from '../entities/State.js'
 
 export class StateHandlerRoom extends Room<State> {
-	maxClients = 1000
+	maxClients = 12
 
 	onCreate(options: IState) {
 		this.setState(new State(options))
@@ -27,6 +27,10 @@ export class StateHandlerRoom extends Room<State> {
 
 	onJoin(client: Client, options: TPlayerOptions) {
 		this.state.createPlayer(client.sessionId, options)
+
+		if (this.state.players.size === 1) {
+			this.state.setOwner(options.userId)
+		}
 	}
 
 	onLeave(client: Client) {

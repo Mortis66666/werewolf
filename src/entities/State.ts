@@ -16,12 +16,16 @@ export class State extends Schema {
 	@type('string')
 	public channelId: string
 
+	@type('string')
+	public ownerId: string
+
 	serverAttribute = 'this attribute wont be sent to the client-side'
 
 	constructor(attributes: IState) {
 		super()
 		this.roomName = attributes.roomName
 		this.channelId = attributes.channelId
+		this.ownerId = ''
 	}
 
 	private _getPlayer(sessionId: string): Player | undefined {
@@ -53,6 +57,18 @@ export class State extends Schema {
 		const player = this._getPlayer(sessionId)
 		if (player != null) {
 			player.talking = false
+		}
+	}
+
+	setOwner(userId: string) {
+		const oldOwner = this.players.get(this.ownerId)
+		if (oldOwner != null) {
+			oldOwner.isOwner = false
+		}
+		const newOwner = this.players.get(userId)
+		if (newOwner != null) {
+			newOwner.isOwner = true
+			this.ownerId = userId
 		}
 	}
 }
